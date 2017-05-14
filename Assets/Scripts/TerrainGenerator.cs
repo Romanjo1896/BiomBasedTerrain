@@ -5,7 +5,7 @@ using System.Diagnostics;
 using UnityEngine;
 using System.Threading;
 
-public class TerrainGenerator : MonoBehaviour {
+public class TerrainGenerator {
     public Terrain myTerrain;
     private static float[,] heights;
 
@@ -19,7 +19,7 @@ public class TerrainGenerator : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start() {
+    public void Start() {
 
         int heightmapWidth = myTerrain.terrainData.heightmapWidth;
         int heightmapHeight = myTerrain.terrainData.heightmapHeight;
@@ -30,13 +30,14 @@ public class TerrainGenerator : MonoBehaviour {
         stopWatch.Start();
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {
-                heights[i, j] = 0.1f;
+                heights[i, j] = 0.01f;
             }
         }
         stopWatch.Stop();
 
         printTime(stopWatch.Elapsed, "init");
         //CoastlineAgent c = new CoastlineAgent(120000, new Point(heightmapWidth / 2, heightmapHeight / 2));
+        //c.move();
 
         stopWatch.Reset();
         stopWatch.Start();
@@ -46,15 +47,17 @@ public class TerrainGenerator : MonoBehaviour {
             MountainAgent m = new MountainAgent(RandomsBySeed.getNextRandom(25000, 200000), RandomsBySeed.getNextRandomPoint(heights));
             ts = ts + m.getElapsedTime();
         }
-        printTime(ts, "time in getAllNeighbours");
+
+        printTime(ts, "In Mountain agent");
         stopWatch.Stop();
         //printTime(stopWatch.Elapsed, "mountain Agents");
 
-        //stopWatch.Reset();
-        //stopWatch.Start();
-        //TerraformingAgent tf = new TerraformingAgent();
-        //stopWatch.Stop();
-        //printTime(stopWatch.Elapsed, "terraforming");
+        stopWatch.Reset();
+        stopWatch.Start();
+        TerraformingAgent tf = new TerraformingAgent();
+        tf.performTerraforming();
+        stopWatch.Stop();
+        printTime(stopWatch.Elapsed, "terraforming");
         myTerrain.terrainData.SetHeights(0, 0, heights);
     }
 

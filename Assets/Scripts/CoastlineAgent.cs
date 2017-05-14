@@ -22,12 +22,9 @@ public class CoastlineAgent {
 
         attractor = new Point(rndX1, rndY1);
         repulsor = new Point(rndX2, rndY2);
-        move();
-
     }
 
     private void move() {
-        List<Int32> winners = new List<int>();
         while (tokens > 1) {
             Point[] nachbarn = getNeighbours().ToArray();
             if (nachbarn.Length == 0) {
@@ -61,6 +58,7 @@ public class CoastlineAgent {
     void checkForDivide() {
         if (tokens > maxTokens * 1.4) {
             CoastlineAgent c = new CoastlineAgent(tokens / 2, startingPoint);
+            c.move();
             tokens = tokens / 2;
             checkForDivide();
         }

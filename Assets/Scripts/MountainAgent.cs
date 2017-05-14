@@ -8,7 +8,7 @@ public class MountainAgent {
     private int tokens;
     private Point startingPoint;
     private Point directionPoint;
-    private const float MAX_HEIGHT = 0.05f;
+    private const float MAX_HEIGHT = 0.1f;
     private const int MAX_WIDTH = 50;
     private Stopwatch stopWatch;
 
@@ -74,17 +74,21 @@ public class MountainAgent {
                 }
             }
         }
-        stopWatch.Start();
+    
         //sehr teuer!
         foreach (Point c in candidates) {
+           
+            //abstand etwa 1/4 der Zeit
             float abstand = Mathf.Sqrt(Mathf.Pow(c.getX() - p.getX(), 2) + Mathf.Pow(c.getY() - p.getY(), 2));
             float h = getMaxHeight() - getMaxHeight() / getMaxWidth() * abstand;
-            //heights[c.getX(), c.getY()] += h / Mathf.Pow(wide / 2, 2) * (RandomsBySeed.getNextRandom(999, 1001) / 1000);
+            stopWatch.Start();
+            //heights += auch sehr teuer
             heights[c.getX(), c.getY()] += h / Mathf.Pow(wide / 2, 2);
+            stopWatch.Stop();
         }
         //ab sehr teuer 50% der kosten des gesamten Prozesses
 
-        stopWatch.Stop();
+      
     }
     //sehr schnell, insgesamt weniger als 1s 
     List<Point> getAllNeighbours(Point p) {
