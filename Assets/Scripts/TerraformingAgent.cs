@@ -60,7 +60,7 @@ public class TerraformingAgent {
 
     //0.05 is fitting
     private float getVariation(int i, int j) {
-        float f = getVariationCoefficient(i, j) * (float)(0.5 * (1 + Math.Tanh(2*heights[i, j] / peakHeight)));
+        float f = getVariationCoefficient(i, j) * heights[i,j]* (float)(0.5 * (1 + Math.Tanh(2*heights[i, j] / peakHeight)));
         return f;
     }
 

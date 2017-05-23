@@ -20,6 +20,10 @@ public class Point {
         return y;
     }
 
+    public static int mod(int x, int y) {
+        return ((x % y) + y) % y;
+    }
+
     public static int approxDistanceToPoint(Point p1, Point p2) {
         int abstand = (int)(Math.Sqrt(Math.Pow(Math.Abs(p1.getX() - p2.getX()), 2) + Math.Pow(Math.Abs(p1.getY() - p2.getY()), 2)));
         return abstand;

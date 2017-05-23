@@ -8,6 +8,7 @@ using System.Threading;
 public class TerrainGenerator {
     public Terrain myTerrain;
     private static float[,] heights;
+    private const float baseHeight = 0.15f;
 
     static int Main(string[] args) {
 
@@ -19,7 +20,7 @@ public class TerrainGenerator {
     }
 
     // Use this for initialization
-    public void Start() {
+    public void Start(bool generateCoastLine = false) {
 
         int heightmapWidth = myTerrain.terrainData.heightmapWidth;
         int heightmapHeight = myTerrain.terrainData.heightmapHeight;
@@ -27,36 +28,65 @@ public class TerrainGenerator {
         heights = myTerrain.terrainData.GetHeights(0, 0, heightmapWidth, heightmapHeight);
 
         Stopwatch stopWatch = new Stopwatch();
-        stopWatch.Start();
+        //stopWatch.Start();
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {
-                heights[i, j] = 0.01f;
+                heights[i, j] = baseHeight;
             }
         }
-        stopWatch.Stop();
 
-        printTime(stopWatch.Elapsed, "init");
-        //CoastlineAgent c = new CoastlineAgent(120000, new Point(heightmapWidth / 2, heightmapHeight / 2));
-        //c.move();
+        //float minH = float.MaxValue;
+        //float maxH = float.MinValue;
+        //for (int i = 0;i < heights.GetLength(0);i++) {
+        //    for (int j = 0;j < heights.GetLength(1);j++) {
+        //        if (heights[i, j] < minH) {
+        //            minH = heights[i, j];
+        //        }
+        //        if (heights[i, j] > maxH) {
+        //            maxH = heights[i, j];
+        //        }
+        //    }
+        //}
+        //UnityEngine.Debug.Log("Heights: min=" + minH + "   max=" + maxH);
+        //stopWatch.Stop();
 
-        stopWatch.Reset();
+        //printTime(stopWatch.Elapsed, "init");
         stopWatch.Start();
+        //CoastlineAgent c = new CoastlineAgent(12000, new Point(heightmapWidth / 2, heightmapHeight / 2));
+        //c.move();
+        stopWatch.Stop();
+        printTime(stopWatch.Elapsed, "coastline");
+
+        int count = 0;
+        for (int i = 0;i < heights.GetLength(0);i++) {
+            for (int j = 0;j < heights.GetLength(1);j++) {
+                if (heights[i, j] > 0) {
+                    count++;
+                }
+            }
+        }
+        UnityEngine.Debug.Log("final count: " + count);
+
+        //stopWatch.Reset();
+        //stopWatch.Start();
 
         TimeSpan ts = new TimeSpan();
-        for (int i = 0;i < 20;i++) {
+        for (int i = 0;i < 5;i++) {
             MountainAgent m = new MountainAgent(RandomsBySeed.getNextRandom(25000, 200000), RandomsBySeed.getNextRandomPoint(heights));
             ts = ts + m.getElapsedTime();
         }
 
-        printTime(ts, "In Mountain agent");
-        stopWatch.Stop();
-        //printTime(stopWatch.Elapsed, "mountain Agents");
+        //printTime(ts, "In Mountain agent");
+        //stopWatch.Stop();
+        printTime(stopWatch.Elapsed, "mountain Agents");
 
-        stopWatch.Reset();
-        stopWatch.Start();
-        TerraformingAgent tf = new TerraformingAgent();
-        tf.performTerraforming();
-        stopWatch.Stop();
+        //stopWatch.Reset();
+        //stopWatch.Start();
+        //TerraformingAgent tf = new TerraformingAgent();
+        //tf.performTerraforming();
+        PerlinNoise ps = new PerlinNoise();
+        ps.changeTerrain();
+        //stopWatch.Stop();
         printTime(stopWatch.Elapsed, "terraforming");
         myTerrain.terrainData.SetHeights(0, 0, heights);
     }
