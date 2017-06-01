@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RandomsBySeed : MonoBehaviour {
+public class RandomsBySeed {
     private static System.Random rand;
 
     public static int getNextRandom(int min, int max) {
@@ -10,6 +10,10 @@ public class RandomsBySeed : MonoBehaviour {
             rand = new System.Random(21092015);
         }
         return rand.Next(min, max + 1);
+    }
+
+    public static void reset() {
+        rand = null;
     }
 
     public static Point getNextRandomPoint(float[,] h) {

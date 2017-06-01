@@ -20,7 +20,7 @@ public class TerrainGenerator {
     }
 
     // Use this for initialization
-    public void Start(bool generateCoastLine = false) {
+    public void Start(bool generateCoastLine = false, int mountainAgentCount = 5) {
 
         int heightmapWidth = myTerrain.terrainData.heightmapWidth;
         int heightmapHeight = myTerrain.terrainData.heightmapHeight;
@@ -51,11 +51,14 @@ public class TerrainGenerator {
         //stopWatch.Stop();
 
         //printTime(stopWatch.Elapsed, "init");
-        stopWatch.Start();
-        //CoastlineAgent c = new CoastlineAgent(12000, new Point(heightmapWidth / 2, heightmapHeight / 2));
-        //c.move();
-        stopWatch.Stop();
-        printTime(stopWatch.Elapsed, "coastline");
+
+        if (generateCoastLine) {
+            stopWatch.Start();
+            CoastlineAgent c = new CoastlineAgent(12000, new Point(heightmapWidth / 2, heightmapHeight / 2));
+            c.move();
+            stopWatch.Stop();
+            printTime(stopWatch.Elapsed, "coastline");
+        }
 
         int count = 0;
         for (int i = 0;i < heights.GetLength(0);i++) {
@@ -71,7 +74,7 @@ public class TerrainGenerator {
         //stopWatch.Start();
 
         TimeSpan ts = new TimeSpan();
-        for (int i = 0;i < 5;i++) {
+        for (int i = 0;i < mountainAgentCount;i++) {
             MountainAgent m = new MountainAgent(RandomsBySeed.getNextRandom(25000, 200000), RandomsBySeed.getNextRandomPoint(heights));
             ts = ts + m.getElapsedTime();
         }
@@ -88,6 +91,15 @@ public class TerrainGenerator {
         ps.changeTerrain();
         //stopWatch.Stop();
         printTime(stopWatch.Elapsed, "terraforming");
+
+        GameObject kapsel = GameObject.Find("Capsule");
+
+        float x = kapsel.GetComponent<Renderer>().bounds.size.x;
+        float y = kapsel.GetComponent<Renderer>().bounds.size.y;
+        float z = kapsel.GetComponent<Renderer>().bounds.size.z;
+        UnityEngine.Debug.Log("Kapsel: x= " + x + "  y= " + y + "  z=" + z);
+
+
         myTerrain.terrainData.SetHeights(0, 0, heights);
     }
 
