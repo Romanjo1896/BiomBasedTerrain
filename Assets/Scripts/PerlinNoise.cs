@@ -8,6 +8,7 @@ public class PerlinNoise {
     private int xMax, yMax;
     private const int OKTAVES = 12;
     private const float MAX_POSSIBLE_HEIGHT = 1.565f;
+    private const float PERLIN_WEIGHT = 1.0f;
 
     public PerlinNoise() {
         heights = TerrainGenerator.getTerrainData();
@@ -27,14 +28,6 @@ public class PerlinNoise {
         for (int o = 0;o < OKTAVES;o++) {
             for (int i = 0;i < perlinFacors.GetLength(0);i++) {
                 for (int j = 0;j < perlinFacors.GetLength(1);j++) {
-                    //foreach (Point item in nachbarn) {
-                    //    sum = sum + heights[item.getX(), item.getY()];
-                    //}
-                    //sum = sum / nachbarn.Count;
-                    //float variation = Mathf.PerlinNoise(((float)i / (float)heights.GetLength(0)) * 10.0f, ((float)j / (float)heights.GetLength(1)) * 10.0f);
-                    //sum = sum + sum * 0.05f * variation;
-                    //sum = sum + heights[i, j] * getVariation(i, j) * (Mathf.PerlinNoise(((float)i / (float)heights.GetLength(0)) * frequency, ((float)j / (float)heights.GetLength(1)) * frequency));
-                    //sum = sum + getVariationCoefficient(i, j) * (Mathf.PerlinNoise(((float)i / (float)heights.GetLength(0)) * frequency, ((float)j / (float)heights.GetLength(1)) * frequency));
                     float perlinAddition = height * (Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax));
 
                     perlinFacors[i, j] += perlinAddition;
@@ -50,11 +43,9 @@ public class PerlinNoise {
                 if (akt > 0.1f) {
                     akt = heights[i, j];
                 }
-                perlinFacors[i, j] = perlinFacors[i, j] / MAX_POSSIBLE_HEIGHT * 0.2f + 0.1f;
+                perlinFacors[i, j] = perlinFacors[i, j] / MAX_POSSIBLE_HEIGHT * PERLIN_WEIGHT + 0.1f;
                 heights[i, j] = heights[i, j] * (1.0f + perlinFacors[i, j]);
-                //heights[i, j] += perlinFacors[i, j];
                 akt = heights[i, j];
-
                 akt = -1;
             }
         }

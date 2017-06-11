@@ -20,12 +20,14 @@ public class BiomTerrainGenerator : EditorWindow {
         GameObject TerrainObj = new GameObject("TerrainObj");
 
         TerrainData _TerrainData = new TerrainData();
-        Vector3 v1 = new Vector3(1500f, 600f, 1500f);
-        _TerrainData.size = new Vector3(1500f / 12, 600f, 1500f / 12);
-        Debug.Log(v1.ToString());
-        _TerrainData.heightmapResolution = 513;
-        _TerrainData.baseMapResolution = 1024;
-        _TerrainData.SetDetailResolution(1024, 8);
+        //_TerrainData.size = new Vector3(1500f/12, 600f, 1500f/12);
+        //_TerrainData.heightmapResolution = 513;
+        //_TerrainData.baseMapResolution = 1024;
+        //_TerrainData.SetDetailResolution(1024, 8);
+        _TerrainData.size = new Vector3(1500f , 600f, 1500f);
+        _TerrainData.heightmapResolution = 1500;
+        _TerrainData.baseMapResolution = 1500;
+        _TerrainData.SetDetailResolution(1500, 8);
         //SplatPrototype[] textures = new SplatPrototype[2];
         //textures[0] = new SplatPrototype();
         //textures[0].texture = Settings.getFlatTexture() ;

@@ -8,7 +8,7 @@ using System.Threading;
 public class TerrainGenerator {
     public Terrain myTerrain;
     private static float[,] heights;
-    private const float baseHeight = 0.15f;
+    private const float baseHeight = 0.05f;
 
     static int Main(string[] args) {
 
