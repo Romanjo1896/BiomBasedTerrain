@@ -8,12 +8,9 @@ using System.Threading;
 public class TerrainGenerator {
     public Terrain myTerrain;
     private static float[,] heights;
-    private const float baseHeight = 0.05f;
+    private const float baseHeight = 30f;
 
     static int Main(string[] args) {
-
-
-
         TerrainGenerator tg = new TerrainGenerator();
         tg.Start();
         return 0;
@@ -35,23 +32,6 @@ public class TerrainGenerator {
             }
         }
 
-        //float minH = float.MaxValue;
-        //float maxH = float.MinValue;
-        //for (int i = 0;i < heights.GetLength(0);i++) {
-        //    for (int j = 0;j < heights.GetLength(1);j++) {
-        //        if (heights[i, j] < minH) {
-        //            minH = heights[i, j];
-        //        }
-        //        if (heights[i, j] > maxH) {
-        //            maxH = heights[i, j];
-        //        }
-        //    }
-        //}
-        //UnityEngine.Debug.Log("Heights: min=" + minH + "   max=" + maxH);
-        //stopWatch.Stop();
-
-        //printTime(stopWatch.Elapsed, "init");
-
         if (generateCoastLine) {
             stopWatch.Start();
             CoastlineAgent c = new CoastlineAgent(12000, new Point(heightmapWidth / 2, heightmapHeight / 2));
@@ -70,8 +50,6 @@ public class TerrainGenerator {
         }
         UnityEngine.Debug.Log("final count: " + count);
 
-        //stopWatch.Reset();
-        //stopWatch.Start();
 
         TimeSpan ts = new TimeSpan();
         for (int i = 0;i < mountainAgentCount;i++) {
@@ -79,26 +57,16 @@ public class TerrainGenerator {
             ts = ts + m.getElapsedTime();
         }
 
-        //printTime(ts, "In Mountain agent");
-        //stopWatch.Stop();
         printTime(stopWatch.Elapsed, "mountain Agents");
-
-        //stopWatch.Reset();
-        //stopWatch.Start();
-        //TerraformingAgent tf = new TerraformingAgent();
-        //tf.performTerraforming();
-        PerlinNoise ps = new PerlinNoise();
-        ps.changeTerrain();
-        //stopWatch.Stop();
+        TerraformingAgent tf = new TerraformingAgent();
+        tf.changeTerrain();
         printTime(stopWatch.Elapsed, "terraforming");
 
-        GameObject kapsel = GameObject.Find("Capsule");
-
-        float x = kapsel.GetComponent<Renderer>().bounds.size.x;
-        float y = kapsel.GetComponent<Renderer>().bounds.size.y;
-        float z = kapsel.GetComponent<Renderer>().bounds.size.z;
-        UnityEngine.Debug.Log("Kapsel: x= " + x + "  y= " + y + "  z=" + z);
-
+        for (int i = 0;i < heights.GetLength(0);i++) {
+            for (int j = 0;j < heights.GetLength(1);j++) {
+                heights[i, j] = heights[i, j] / 600.0f;
+            }
+        }
 
         myTerrain.terrainData.SetHeights(0, 0, heights);
     }

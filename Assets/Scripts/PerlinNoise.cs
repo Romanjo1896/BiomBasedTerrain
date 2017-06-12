@@ -25,10 +25,11 @@ public class PerlinNoise {
                 perlinFacors[i, j] = 0;
             }
         }
+        float perlinAddition;
         for (int o = 0;o < OKTAVES;o++) {
             for (int i = 0;i < perlinFacors.GetLength(0);i++) {
                 for (int j = 0;j < perlinFacors.GetLength(1);j++) {
-                    float perlinAddition = height * (Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax));
+                    perlinAddition = height * (Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax));
 
                     perlinFacors[i, j] += perlinAddition;
                 }
@@ -73,8 +74,7 @@ public class PerlinNoise {
         TerrainGenerator.updateHeights(heights);
     }
     private float getVariation(int i, int j) {
-        float f = getVariationCoefficient(i, j) * heights[i, j] * (float)(0.5 * (1 + System.Math.Tanh(2 * i * j / (xMax * yMax))));
-        return f;
+        return getVariationCoefficient(i, j) * heights[i, j] * (float)(0.5 * (1 + System.Math.Tanh(2 * i * j / (xMax * yMax))));
     }
 
     private float getVariationCoefficient(int x, int y) {

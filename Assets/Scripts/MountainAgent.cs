@@ -8,7 +8,7 @@ public class MountainAgent {
     private int tokens;
     private Point startingPoint;
     private Point directionPoint;
-    private const float MAX_HEIGHT = 0.1f;
+    private const float MAX_HEIGHT = 80.0f;
     private const int MAX_WIDTH = 50;
     private Stopwatch stopWatch;
 
@@ -50,18 +50,11 @@ public class MountainAgent {
                 }
             }
         }
-
-        TerrainGenerator.updateHeights(heights);
+      TerrainGenerator.updateHeights(heights);
     }
 
     //Bottleneck!
     private void raiseTerrain(Point p) {
-        
-        //List<Point> neighbours = GetAllNeighbours(p);
-        //foreach (Point n in neighbours) {
-        //    heights[n.getX(), n.getY()] += (float)(getMaxHeight() * (100.0f / RandomsBySeed.getNextRandom(80, 100)) / 200);
-        //    //heights[n.getX(), n.getY()] = 0.1f;
-        //}
 
         int wide = (int)(getMaxWidth() * RandomsBySeed.getNextRandom(8, 10) / 10.0);
         List<Point> candidates = new List<Point>();
@@ -74,21 +67,23 @@ public class MountainAgent {
                 }
             }
         }
-    
+
         //sehr teuer!
+        float abstand;
+        float h;
         foreach (Point c in candidates) {
-           
+
             //abstand etwa 1/4 der Zeit
-            float abstand = Mathf.Sqrt(Mathf.Pow(c.getX() - p.getX(), 2) + Mathf.Pow(c.getY() - p.getY(), 2));
-            float h = getMaxHeight() - getMaxHeight() / getMaxWidth() * abstand;
+            abstand = Mathf.Sqrt(Mathf.Pow(c.getX() - p.getX(), 2) + Mathf.Pow(c.getY() - p.getY(), 2));
+            h = getMaxHeight() - getMaxHeight() / getMaxWidth() * abstand;
             stopWatch.Start();
             //heights += auch sehr teuer
-            heights[c.getX(), c.getY()] += h / Mathf.Pow(wide / 2, 2);
+            // /(0.25*wide*wide) da ansonsten zu hoch, wegen mehrfacherfühung
+            heights[c.getX(), c.getY()] += h / (0.25f * wide * wide);
             stopWatch.Stop();
         }
         //ab sehr teuer 50% der kosten des gesamten Prozesses
 
-      
     }
     //sehr schnell, insgesamt weniger als 1s 
     List<Point> getAllNeighbours(Point p) {
@@ -97,27 +92,15 @@ public class MountainAgent {
         List<Point> nachbarn = new List<Point>();
         if (x > 0) {
             nachbarn.Add(new Point(x - 1, y));
-            //if (y > 0) {
-            //    nachbarn.Add(new Point(x - 1, y - 1));
-            //}
         }
         if (x < heights.GetLength(0) - 2) {
             nachbarn.Add(new Point(x + 1, y));
-            //if (y < heights.GetLength(1) - 2) {
-            //    nachbarn.Add(new Point(x + 1, y + 1));
-            //}
         }
         if (y > 0) {
             nachbarn.Add(new Point(x, y - 1));
-            //if (x < heights.GetLength(0) - 2) {
-            //    nachbarn.Add(new Point(x + 1, y - 1));
-            //}
         }
         if (y < heights.GetLength(1) - 2) {
             nachbarn.Add(new Point(x, y + 1));
-            //if (x > 0) {
-            //    nachbarn.Add(new Point(x - 1, y + 1));
-            //}
         }
         return nachbarn;
     }

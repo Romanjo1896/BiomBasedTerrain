@@ -14,7 +14,7 @@ public class CoastlineAgent {
     private int yMax;
 
     public CoastlineAgent(int tokens, Point startingPoint) {
- 
+
 
         this.tokens = tokens;
         this.startingPoint = startingPoint;
@@ -39,37 +39,6 @@ public class CoastlineAgent {
 
     }
 
-    //private void move() {
-    //    while (tokens > 1) {
-    //        Point[] nachbarn = getNeighbours().ToArray();
-    //        if (nachbarn.Length == 0) {
-    //            Point[] possibles = getAllNeighbours().ToArray();
-    //            startingPoint = possibles[RandomsBySeed.getNextRandom(0, possibles.Length - 1)];
-    //        }
-    //        else {
-    //            int[] scores = new int[nachbarn.Length];
-    //            for (int i = 0;i < nachbarn.Length;i++) {
-    //                int t1 = approxDistanceToPoint(nachbarn[i], repulsor);
-    //                int t2 = approxDistanceToPoint(nachbarn[i], attractor);
-    //                int t3 = distanceToMiddle(nachbarn[i]);
-    //                scores[i] = t1 - t2 - 3 * t3;
-    //            }
-    //            int max = Mathf.Max(scores);
-    //            for (int i = 0;i < scores.Length;i++) {
-    //                if (max == scores[i]) {
-    //                    //Set new starting Point as where the agents moves to
-    //                    startingPoint = nachbarn[i];
-    //                    heights[startingPoint.getX(), startingPoint.getY()] = 0.1f;
-    //                    tokens--;
-    //                    break;
-    //                }
-    //            }
-    //            TerrainGenerator.updateHeights(heights);
-    //        }
-    //    }
-
-    //}
-
     public void move() {
         while (tokens > 0) {
             Point[] nachbarn = getNeighbours();
@@ -88,7 +57,7 @@ public class CoastlineAgent {
                 for (int i = 0;i < scores.Length;i++) {
                     if (max == scores[i]) {
                         //Set new starting Point as where the agents moves to
-                         raised[startingPoint.getX(), startingPoint.getY()] = true;
+                        raised[startingPoint.getX(), startingPoint.getY()] = true;
                         startingPoint = nachbarn[i];
                         tokens--;
                         break;
@@ -102,7 +71,7 @@ public class CoastlineAgent {
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {
                 if (raised[i, j]) {
-                    heights[i, j] = 0.1f;
+                    heights[i, j] = 60.0f;
                     count++;
                 }
             }
@@ -149,28 +118,6 @@ public class CoastlineAgent {
         return nachbarn.ToArray();
     }
 
-    ///**
-    // *  Returns all neighbours under sea level
-    // */
-    //List<Point> getNeighbours() {
-    //    int x = startingPoint.getX();
-    //    int y = startingPoint.getY();
-    //    List<Point> nachbarn = new List<Point>();
-    //    if (x > 0 && heights[x - 1, y] == 0) {
-    //        nachbarn.Add(new Point(x - 1, y));
-    //    }
-    //    if (x < heights.GetLength(0) - 2 && heights[x + 1, y] == 0) {
-    //        nachbarn.Add(new Point(x + 1, y));
-    //    }
-    //    if (y > 0 && heights[x, y - 1] == 0) {
-    //        nachbarn.Add(new Point(x, y - 1));
-    //    }
-    //    if (y < heights.GetLength(1) - 2 && heights[x, y + 1] == 0) {
-    //        nachbarn.Add(new Point(x, y + 1));
-    //    }
-    //    return nachbarn;
-    //}
-
     int distanceToEdge(Point p) {
         int min1 = Math.Min(p.getX(), xMax - p.getX());
         int min2 = Math.Min(p.getY(), yMax - p.getY());
@@ -188,6 +135,4 @@ public class CoastlineAgent {
         int abstand = (int)(Math.Sqrt(Math.Pow(Math.Abs(p1.getX() - p2.getX()), 2) + Math.Pow(Math.Abs(p1.getY() - p2.getY()), 2)));
         return abstand;
     }
-
-
 }
