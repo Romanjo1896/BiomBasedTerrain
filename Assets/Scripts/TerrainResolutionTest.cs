@@ -3,25 +3,26 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 
+//Just for testing
 public class TerrainResolutionTest {
     public Terrain myTerrain;
     private static float[,] heights;
 
     public TerrainResolutionTest() {
-        GameObject TerrainObj = new GameObject("TerrainObj");
+
+    }
+
+    public void start() {
         TerrainData _TerrainData = new TerrainData();
         GameObject terrainGo = GameObject.Find("TerrainObj");
         Object.DestroyImmediate(terrainGo);
         terrainGo = createTerrain(1, 1);
         myTerrain = terrainGo.GetComponent<Terrain>();
 
-        _TerrainData.size = new Vector3(15f, 600f, 15f);
+        _TerrainData.size = new Vector3(15f, 1, 15f);
         _TerrainData.heightmapResolution = 15;
         _TerrainData.baseMapResolution = 1028;
         _TerrainData.SetDetailResolution(1028, 8);
-
-
-
 
         int heightmapWidth = myTerrain.terrainData.heightmapWidth;
         int heightmapHeight = myTerrain.terrainData.heightmapHeight;
@@ -29,8 +30,8 @@ public class TerrainResolutionTest {
 
         heights[7, 7] = 1;
         heights[7, 8] = 1;
-        heights[8, 7] = 2;
-        heights[8, 8] = 2;
+        heights[8, 7] = 1;
+        heights[8, 8] = 1;
         myTerrain.terrainData.SetHeights(0, 0, heights);
     }
 
@@ -45,12 +46,6 @@ public class TerrainResolutionTest {
         _TerrainData.heightmapResolution = 25;
         _TerrainData.baseMapResolution = 1028;
         _TerrainData.SetDetailResolution(1028, 8);
-        //SplatPrototype[] textures = new SplatPrototype[2];
-        //textures[0] = new SplatPrototype();
-        //textures[0].texture = Settings.getFlatTexture() ;
-        //textures[1] = new SplatPrototype();
-        //textures[1].texture = Settings.getSteepTexture();
-        //_TerrainData.splatPrototypes = textures;
 
         int _heightmapWidth = _TerrainData.heightmapWidth;
         int _heightmapHeight = _TerrainData.heightmapHeight;

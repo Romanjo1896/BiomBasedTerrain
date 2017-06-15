@@ -27,15 +27,16 @@ public class BiomTerrainGenerator : EditorWindow {
         //_TerrainData.baseMapResolution = 1024;
         //_TerrainData.SetDetailResolution(1024, 8);
         _TerrainData.size = new Vector3(25.0f * sizeX, 600f, 25.0f * sizeY);
-        _TerrainData.heightmapResolution = 513;
+        int res = 2;
+        while (res + 1 < 4* 25 * Math.Max(sizeX, sizeY)) {
+            res = res * 2;
+        }
+        //grater than 4097 not possible
+        res = Math.Min(4097, res + 1);
+        
+        _TerrainData.heightmapResolution = res;
         _TerrainData.baseMapResolution = 1024;
         _TerrainData.SetDetailResolution(1024, 8);
-        //SplatPrototype[] textures = new SplatPrototype[2];
-        //textures[0] = new SplatPrototype();
-        //textures[0].texture = Settings.getFlatTexture() ;
-        //textures[1] = new SplatPrototype();
-        //textures[1].texture = Settings.getSteepTexture();
-        //_TerrainData.splatPrototypes = textures;
 
         int _heightmapWidth = _TerrainData.heightmapWidth;
         int _heightmapHeight = _TerrainData.heightmapHeight;
@@ -74,9 +75,11 @@ public class BiomTerrainGenerator : EditorWindow {
             tg1.Start(coastLineAgent, mountainAgents);
             applyTextures(tg1.myTerrain.terrainData);
         }
+        //test purposes, remove later
         if (GUILayout.Button("ResTest")) {
-
+    
             TerrainResolutionTest trt = new TerrainResolutionTest();
+            trt.start();
         }
     }
 
@@ -100,7 +103,6 @@ public class BiomTerrainGenerator : EditorWindow {
                 var normalizedX = (float)xRes / (terrainData.alphamapWidth - 1);
                 var normalizedZ = (float)zRes / (terrainData.alphamapHeight - 1);
                 var steepness = terrainData.GetSteepness(normalizedX, normalizedZ);
-                //var steepnessNormalized = Mathf.Clamp(steepness / 1.5f, 0, 1.0f);
                 var steepnessNormalized = steepness / 90.0f;
                 splatMap[zRes, xRes, 0] = 1f - steepnessNormalized;
                 splatMap[zRes, xRes, 1] = steepnessNormalized;

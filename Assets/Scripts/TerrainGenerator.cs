@@ -10,12 +10,6 @@ public class TerrainGenerator {
     private static float[,] heights;
     private const float baseHeight = 30f;
 
-    static int Main(string[] args) {
-        TerrainGenerator tg = new TerrainGenerator();
-        tg.Start();
-        return 0;
-    }
-
     // Use this for initialization
     public void Start(bool generateCoastLine = false, int mountainAgentCount = 5) {
 
@@ -25,7 +19,6 @@ public class TerrainGenerator {
         heights = myTerrain.terrainData.GetHeights(0, 0, heightmapWidth, heightmapHeight);
 
         Stopwatch stopWatch = new Stopwatch();
-        //stopWatch.Start();
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {
                 heights[i, j] = baseHeight;
@@ -37,18 +30,8 @@ public class TerrainGenerator {
             CoastlineAgent c = new CoastlineAgent(12000, new Point(heightmapWidth / 2, heightmapHeight / 2));
             c.move();
             stopWatch.Stop();
-            printTime(stopWatch.Elapsed, "coastline");
+            printTime(stopWatch.Elapsed, "Coastline");
         }
-
-        int count = 0;
-        for (int i = 0;i < heights.GetLength(0);i++) {
-            for (int j = 0;j < heights.GetLength(1);j++) {
-                if (heights[i, j] > 0) {
-                    count++;
-                }
-            }
-        }
-        UnityEngine.Debug.Log("final count: " + count);
 
 
         TimeSpan ts = new TimeSpan();
@@ -56,11 +39,11 @@ public class TerrainGenerator {
             MountainAgent m = new MountainAgent(RandomsBySeed.getNextRandom(25000, 200000), RandomsBySeed.getNextRandomPoint(heights));
             ts = ts + m.getElapsedTime();
         }
+        printTime(ts, "Mountains");
 
-        printTime(stopWatch.Elapsed, "mountain Agents");
         TerraformingAgent tf = new TerraformingAgent();
         tf.changeTerrain();
-        printTime(stopWatch.Elapsed, "terraforming");
+        printTime(tf.getElapsedTime() ,"Terraforming");
 
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {

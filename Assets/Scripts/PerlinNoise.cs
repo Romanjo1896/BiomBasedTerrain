@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//For later purposes, not inbound yet
 public class PerlinNoise {
     float[,] heights;
     private const float MAX_HEIGHT = 1; //0,2f war gut

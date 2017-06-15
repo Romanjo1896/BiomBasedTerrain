@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using UnityEngine;
 
 //Performance gut, unter 1s
@@ -11,12 +12,15 @@ public class TerraformingAgent {
     private const int OKTAVES = 12;
     private const float MAX_POSSIBLE_HEIGHT = 1.565f;
     private const float PERLIN_WEIGHT = 1.0f;
+    private Stopwatch stopWatch;
 
     public TerraformingAgent() {
         heights = TerrainGenerator.getTerrainData();
+        stopWatch = new Stopwatch();
     }
 
     public void changeTerrain() {
+        stopWatch.Start();
         float[,] perlinFacors = new float[heights.GetLength(0), heights.GetLength(1)];
         float height = MAX_HEIGHT;
         float frequency = 4;
@@ -72,6 +76,7 @@ public class TerraformingAgent {
             }
         }
         TerrainGenerator.updateHeights(heights);
+        stopWatch.Stop();
     }
     private float getVariation(int i, int j) {
         float f = getVariationCoefficient(i, j) * heights[i, j] * (float)(0.5 * (1 + System.Math.Tanh(2 * i * j / (xMax * yMax))));
@@ -82,6 +87,9 @@ public class TerraformingAgent {
         return 0.05f;
     }
 
+    public TimeSpan getElapsedTime() {
+        return stopWatch.Elapsed;
+    }
 
     List<Point> getAllNeighbours(int x, int y) {
         List<Point> nachbarn = new List<Point>();

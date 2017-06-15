@@ -27,6 +27,7 @@ public class MountainAgent {
     }
 
     private void walk() {
+        stopWatch.Start();
         Point curLocation = startingPoint;
         while (tokens > 0) {
             Point[] neighbours = getAllNeighbours(curLocation).ToArray();
@@ -50,12 +51,12 @@ public class MountainAgent {
                 }
             }
         }
-      TerrainGenerator.updateHeights(heights);
+        TerrainGenerator.updateHeights(heights);
+        stopWatch.Stop();
     }
 
     //Bottleneck!
     private void raiseTerrain(Point p) {
-
         int wide = (int)(getMaxWidth() * RandomsBySeed.getNextRandom(8, 10) / 10.0);
         List<Point> candidates = new List<Point>();
         for (int x = p.getX() - wide / 2;x < p.getX() + wide / 2;x++) {
@@ -72,15 +73,12 @@ public class MountainAgent {
         float abstand;
         float h;
         foreach (Point c in candidates) {
-
             //abstand etwa 1/4 der Zeit
             abstand = Mathf.Sqrt(Mathf.Pow(c.getX() - p.getX(), 2) + Mathf.Pow(c.getY() - p.getY(), 2));
             h = getMaxHeight() - getMaxHeight() / getMaxWidth() * abstand;
-            stopWatch.Start();
             //heights += auch sehr teuer
             // /(0.25*wide*wide) da ansonsten zu hoch, wegen mehrfacherfühung
             heights[c.getX(), c.getY()] += h / (0.25f * wide * wide);
-            stopWatch.Stop();
         }
         //ab sehr teuer 50% der kosten des gesamten Prozesses
 

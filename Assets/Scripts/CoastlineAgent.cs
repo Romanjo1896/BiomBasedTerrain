@@ -50,6 +50,7 @@ public class CoastlineAgent {
                 for (int i = 0;i < nachbarn.Length;i++) {
                     int t1 = approxDistanceToPoint(nachbarn[i], repulsor);
                     int t2 = approxDistanceToPoint(nachbarn[i], attractor);
+                    //works better than distance to edge
                     int t3 = -distanceToMiddle(nachbarn[i]);
                     scores[i] = t1 - t2 + 3 * t3;
                 }
@@ -66,7 +67,6 @@ public class CoastlineAgent {
 
             }
         }
-        //Irgendwo gehen noch tokens verloren!
         int count = 0;
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {
@@ -125,13 +125,12 @@ public class CoastlineAgent {
     }
 
     int distanceToMiddle(Point p) {
-        //int abstand = Mathf.Min(p.getX() + p.getY(), p.getY() + heights.GetLength(0) - p.getX(), p.getX() + heights.GetLength(1) - p.getY(), heights.GetLength(1) - p.getY() + heights.GetLength(0) - p.getX());
         Point middle = new Point(heights.GetLength(0) / 2, heights.GetLength(1) / 2);
-
         return approxDistanceToPoint(p, middle);
     }
 
     public static int approxDistanceToPoint(Point p1, Point p2) {
+        //sqrt noch entfernen
         int abstand = (int)(Math.Sqrt(Math.Pow(Math.Abs(p1.getX() - p2.getX()), 2) + Math.Pow(Math.Abs(p1.getY() - p2.getY()), 2)));
         return abstand;
     }
