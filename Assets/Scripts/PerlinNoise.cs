@@ -5,83 +5,71 @@ using UnityEngine;
 //For later purposes, not inbound yet
 public class PerlinNoise {
     float[,] heights;
-    private const float MAX_HEIGHT = 1; //0,2f war gut
-    private int xMax, yMax;
-    private const int OKTAVES = 12;
+    private static int xMax, yMax;
     private const float MAX_POSSIBLE_HEIGHT = 1.565f;
-    private const float PERLIN_WEIGHT = 1.0f;
 
-    public PerlinNoise() {
-        heights = TerrainGenerator.getTerrainData();
+    public static float[,] generatePerlinNoise(int x, int y, float frequency, int oktaves) {
+        float[,] map = new float[x, y];
+        generatePerlinNoise(map, frequency, oktaves);
+        return map;
     }
 
-    public void changeTerrain() {
-        float[,] perlinFacors = new float[heights.GetLength(0), heights.GetLength(1)];
-        float height = MAX_HEIGHT;
-        float frequency = 4;
-        xMax = heights.GetLength(0) - 1;
-        yMax = heights.GetLength(1) - 1;
-        for (int i = 0;i < perlinFacors.GetLength(0);i++) {
-            for (int j = 0;j < perlinFacors.GetLength(1);j++) {
-                perlinFacors[i, j] = 0;
+    public static void generatePerlinNoise(float[,] map, float frequency, int oktaves) {
+        float height = 1;
+        xMax = map.GetLength(0) - 1;
+        yMax = map.GetLength(1) - 1;
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                map[i, j] = 0;
             }
         }
-        float perlinAddition;
-        for (int o = 0;o < OKTAVES;o++) {
-            for (int i = 0;i < perlinFacors.GetLength(0);i++) {
-                for (int j = 0;j < perlinFacors.GetLength(1);j++) {
-                    perlinAddition = height * (Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax));
-
-                    perlinFacors[i, j] += perlinAddition;
+        for (int o = 0;o < oktaves;o++) {
+            for (int i = 0;i < map.GetLength(0);i++) {
+                for (int j = 0;j < map.GetLength(1);j++) {
+                    map[i, j] += height * Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax);
                 }
             }
             height = height / 2;
             frequency = frequency * 2;
         }
-        float akt = 0;
-        for (int i = 0;i < heights.GetLength(0);i++) {
-            for (int j = 0;j < heights.GetLength(1);j++) {
-                akt = heights[i, j];
-                if (akt > 0.1f) {
-                    akt = heights[i, j];
-                }
-                perlinFacors[i, j] = perlinFacors[i, j] / MAX_POSSIBLE_HEIGHT * PERLIN_WEIGHT + 0.1f;
-                heights[i, j] = heights[i, j] * (1.0f + perlinFacors[i, j]);
-                akt = heights[i, j];
-                akt = -1;
-            }
-        }
         float min = float.MaxValue;
-        float minH = float.MaxValue;
         float max = float.MinValue;
-        float maxH = float.MinValue;
-        for (int i = 0;i < perlinFacors.GetLength(0);i++) {
-            for (int j = 0;j < perlinFacors.GetLength(1);j++) {
-                if (perlinFacors[i, j] < min) {
-                    min = perlinFacors[i, j];
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                if (map[i, j] < min) {
+                    min = map[i, j];
                 }
-                if (perlinFacors[i, j] > max) {
-                    max = perlinFacors[i, j];
-                }
-                if (heights[i, j] < minH) {
-                    minH = heights[i, j];
-                }
-                if (heights[i, j] > maxH) {
-                    maxH = heights[i, j];
+                if (map[i, j] > max) {
+                    max = map[i, j];
                 }
             }
         }
-        Debug.Log("Perlin: min=" + (1 + min) + "  max=" + (1 + max) + "\nHeights: min=" + minH + "   max=" + maxH);
-        TerrainGenerator.updateHeights(heights);
-    }
-    private float getVariation(int i, int j) {
-        return getVariationCoefficient(i, j) * heights[i, j] * (float)(0.5 * (1 + System.Math.Tanh(2 * i * j / (xMax * yMax))));
-    }
+        Debug.Log("Perlin min=" + min + "  max=" + max);
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                map[i, j] = (map[i, j] - min) / (max - min);
+            }
+        }
 
-    private float getVariationCoefficient(int x, int y) {
-        return 0.05f;
-    }
+        //for (int i = 0;i < map.GetLength(0);i++) {
+        //    for (int j = 0;j < map.GetLength(1);j++) {
+        //        map[i, j] = map[i, j] / max;
+        //    }
+        //}
 
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                if (map[i, j] < min) {
+                    min = map[i, j];
+                }
+                if (map[i, j] > max) {
+                    max = map[i, j];
+                }
+            }
+        }
+        Debug.Log("Perlin min=" + min + "  max=" + max);
+
+    }
 
     List<Point> getAllNeighbours(int x, int y) {
         List<Point> nachbarn = new List<Point>();

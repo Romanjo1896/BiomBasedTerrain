@@ -7,10 +7,12 @@ public class MountainAgent {
     private float[,] heights;
     private int tokens;
     private Point startingPoint;
-    private Point directionPoint;
+    private Point repulsor;
     private const float MAX_HEIGHT = 80.0f;
     private const int MAX_WIDTH = 50;
     private Stopwatch stopWatch;
+    private static float[,] mountainHeights;
+    private static float[,] mountainWides;
 
     //performance bei etwa 1min
     public MountainAgent(int tokens, Point startingPoint) {
@@ -18,7 +20,7 @@ public class MountainAgent {
         this.startingPoint = startingPoint;
         this.tokens = tokens;
         heights = TerrainGenerator.getTerrainData();
-        directionPoint = RandomsBySeed.getNextDirectionPoint(heights.GetLength(0) - 1, heights.GetLength(1) - 1);
+        repulsor = RandomsBySeed.getNextDirectionPoint(heights.GetLength(0) - 1, heights.GetLength(1) - 1);
         walk();
     }
 
@@ -37,7 +39,7 @@ public class MountainAgent {
             foreach (Point n in neighbours) {
                 int[] scores = new int[neighbours.Length];
                 for (int i = 0;i < neighbours.Length;i++) {
-                    scores[i] = Point.approxDistanceToPoint(neighbours[i], directionPoint) * RandomsBySeed.getNextRandom(8, 10);
+                    scores[i] = Point.exactDistanceToPoint(neighbours[i], repulsor) * RandomsBySeed.getNextRandom(8, 10);
                 }
                 int max = Mathf.Max(scores);
                 for (int i = 0;i < scores.Length;i++) {
@@ -57,11 +59,13 @@ public class MountainAgent {
 
     //Bottleneck!
     private void raiseTerrain(Point p) {
-        int wide = (int)(getMaxWidth() * RandomsBySeed.getNextRandom(8, 10) / 10.0);
+        float pHoehe = getHeight(p.getX(), p.getY()) * MAX_HEIGHT;
+        float pBreite = getWidth(p.getX(), p.getY()) * MAX_WIDTH;
+        int wide = (int)(getWidth(p.getX(), p.getY()) * RandomsBySeed.getNextRandom(8, 10) / 10.0 * MAX_WIDTH);
         List<Point> candidates = new List<Point>();
-        for (int x = p.getX() - wide / 2;x < p.getX() + wide / 2;x++) {
+        for (int x = p.getX() - (int)pBreite / 2;x < p.getX() + pBreite / 2;x++) {
             if (x > 0 && x < heights.GetLength(0)) {
-                for (int y = p.getY() - wide / 2;y < p.getY() + wide / 2;y++) {
+                for (int y = p.getY() - (int)pBreite / 2;y < p.getY() + pBreite / 2;y++) {
                     if (y > 0 && y < heights.GetLength(1)) {
                         candidates.Add(new Point(x, y));
                     }
@@ -72,13 +76,21 @@ public class MountainAgent {
         //sehr teuer!
         float abstand;
         float h;
+        float add;
+
         foreach (Point c in candidates) {
             //abstand etwa 1/4 der Zeit
-            abstand = Mathf.Sqrt(Mathf.Pow(c.getX() - p.getX(), 2) + Mathf.Pow(c.getY() - p.getY(), 2));
-            h = getMaxHeight() - getMaxHeight() / getMaxWidth() * abstand;
+            //abstand = Mathf.Sqrt(Mathf.Pow(c.getX() - p.getX(), 2) + Mathf.Pow(c.getY() - p.getY(), 2));
+            abstand = Mathf.Abs(c.getX() - p.getX()) + Mathf.Abs(c.getY() - p.getY());
+            h = pHoehe - pHoehe / pBreite * abstand;
             //heights += auch sehr teuer
             // /(0.25*wide*wide) da ansonsten zu hoch, wegen mehrfacherfühung
-            heights[c.getX(), c.getY()] += h / (0.25f * wide * wide);
+            add = h / (0.25f * pBreite * pBreite) ;
+            heights[c.getX(), c.getY()] += add;
+            if (add < 0) {
+                UnityEngine.Debug.Log("found it!!!!!!!!!!!!!!!!!");
+                return;
+            }
         }
         //ab sehr teuer 50% der kosten des gesamten Prozesses
 
@@ -103,11 +115,17 @@ public class MountainAgent {
         return nachbarn;
     }
 
-    private int getMaxWidth() {
-        return MAX_WIDTH;
+    private float getWidth(int x, int y) {
+        if (mountainWides == null) {
+            mountainWides = Parameters.getMountainWides();
+        }
+        return mountainWides[x, y];
     }
 
-    private float getMaxHeight() {
-        return MAX_HEIGHT;
+    private float getHeight(int x, int y) {
+        if (mountainWides == null) {
+            mountainWides = Parameters.getMountainWides();
+        }
+        return mountainWides[x, y];
     }
 }

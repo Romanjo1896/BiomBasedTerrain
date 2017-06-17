@@ -24,10 +24,13 @@ public class Point {
         return ((x % y) + y) % y;
     }
 
+
     public static int approxDistanceToPoint(Point p1, Point p2) {
-        int abstand = (int)(Math.Sqrt(Math.Pow(Math.Abs(p1.getX() - p2.getX()), 2) + Math.Pow(Math.Abs(p1.getY() - p2.getY()), 2)));
-        return abstand;
+        return Math.Abs(p1.getX() - p2.getX()) + Math.Abs(p1.getY() - p2.getY());
     }
 
+    public static int exactDistanceToPoint(Point p1, Point p2) {
+        return (int)(Math.Sqrt(Math.Pow((p1.getX() - p2.getX()), 2) + Math.Pow((p1.getY() - p2.getY()), 2)));
+    }
 }
 

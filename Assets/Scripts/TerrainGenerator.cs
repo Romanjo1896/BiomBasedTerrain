@@ -8,10 +8,10 @@ using System.Threading;
 public class TerrainGenerator {
     public Terrain myTerrain;
     private static float[,] heights;
-    private const float baseHeight = 30f;
+    private const float baseHeight = 30.0f;
 
     // Use this for initialization
-    public void Start(bool generateCoastLine = false, int mountainAgentCount = 5) {
+    public void Start(bool generateCoastLine, int mountainAgentCount, bool terraforming) {
 
         int heightmapWidth = myTerrain.terrainData.heightmapWidth;
         int heightmapHeight = myTerrain.terrainData.heightmapHeight;
@@ -25,6 +25,8 @@ public class TerrainGenerator {
             }
         }
 
+        Parameters.generateAllMaps(heightmapWidth, heightmapHeight);
+
         if (generateCoastLine) {
             stopWatch.Start();
             CoastlineAgent c = new CoastlineAgent(12000, new Point(heightmapWidth / 2, heightmapHeight / 2));
@@ -33,17 +35,17 @@ public class TerrainGenerator {
             printTime(stopWatch.Elapsed, "Coastline");
         }
 
-
         TimeSpan ts = new TimeSpan();
         for (int i = 0;i < mountainAgentCount;i++) {
             MountainAgent m = new MountainAgent(RandomsBySeed.getNextRandom(25000, 200000), RandomsBySeed.getNextRandomPoint(heights));
             ts = ts + m.getElapsedTime();
         }
         printTime(ts, "Mountains");
-
-        TerraformingAgent tf = new TerraformingAgent();
-        tf.changeTerrain();
-        printTime(tf.getElapsedTime() ,"Terraforming");
+        if (terraforming) {
+            TerraformingAgent tf = new TerraformingAgent();
+            tf.changeTerrain();
+            printTime(tf.getElapsedTime(), "Terraforming");
+        }
 
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {

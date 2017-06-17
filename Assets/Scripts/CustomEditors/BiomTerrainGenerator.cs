@@ -1,8 +1,5 @@
 ﻿using UnityEditor;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using System.Reflection;
 using System;
 
 public class BiomTerrainGenerator : EditorWindow {
@@ -12,6 +9,9 @@ public class BiomTerrainGenerator : EditorWindow {
     private bool terrainSquare = true;
     private int sizeX = 5;
     private int sizeY = 5;
+    private float frequency = 1;
+    private int oktaves = 4;
+    private bool terraforming = true;
 
     [MenuItem("Window/Terrain/BiomTerrainGenerator")]
     public static void ShowWindow() {
@@ -28,12 +28,12 @@ public class BiomTerrainGenerator : EditorWindow {
         //_TerrainData.SetDetailResolution(1024, 8);
         _TerrainData.size = new Vector3(25.0f * sizeX, 600f, 25.0f * sizeY);
         int res = 2;
-        while (res + 1 < 4* 25 * Math.Max(sizeX, sizeY)) {
+        while (res + 1 < 4 * 25 * Math.Max(sizeX, sizeY)) {
             res = res * 2;
         }
         //grater than 4097 not possible
         res = Math.Min(4097, res + 1);
-        
+
         _TerrainData.heightmapResolution = res;
         _TerrainData.baseMapResolution = 1024;
         _TerrainData.SetDetailResolution(1024, 8);
@@ -54,7 +54,12 @@ public class BiomTerrainGenerator : EditorWindow {
 
         mountainAgents = EditorGUILayout.IntField("Number Mountain agents", mountainAgents);
         coastLineAgent = GUILayout.Toggle(coastLineAgent, "Coast line");
+        terraforming = GUILayout.Toggle(terraforming, "terraforming");
         sizeX = EditorGUILayout.IntField("X factor size", sizeX);
+        oktaves = EditorGUILayout.IntField("oktaves", oktaves);
+        frequency = EditorGUILayout.FloatField("frequency", frequency);
+
+
         if (GUILayout.Toggle(terrainSquare, "Terrain as a square")) {
             terrainSquare = true;
             sizeY = sizeX;
@@ -70,16 +75,34 @@ public class BiomTerrainGenerator : EditorWindow {
             DestroyImmediate(terrainGo);
             terrainGo = createTerrain();
             tg1.myTerrain = terrainGo.GetComponent<Terrain>();
-
-
-            tg1.Start(coastLineAgent, mountainAgents);
+            tg1.Start(coastLineAgent, mountainAgents,terraforming);
             applyTextures(tg1.myTerrain.terrainData);
         }
         //test purposes, remove later
         if (GUILayout.Button("ResTest")) {
-    
             TerrainResolutionTest trt = new TerrainResolutionTest();
             trt.start();
+        }
+        if (GUILayout.Button("ParameterPerlin Test")) {
+            RandomsBySeed.reset();
+            GameObject terrainGo = GameObject.Find("TerrainObj");
+            DestroyImmediate(terrainGo);
+            terrainGo = createTerrain();
+
+            Terrain myTerrain = terrainGo.GetComponent<Terrain>();
+
+            int heightmapWidth = myTerrain.terrainData.heightmapWidth;
+            int heightmapHeight = myTerrain.terrainData.heightmapHeight;
+
+            float[,] mapMaxHeight = myTerrain.terrainData.GetHeights(0, 0, heightmapWidth, heightmapHeight);
+
+            PerlinNoise.generatePerlinNoise(mapMaxHeight, frequency, oktaves);
+            for (int i = 0;i < mapMaxHeight.GetLength(0);i++) {
+                for (int j = 0;j < mapMaxHeight.GetLength(1);j++) {
+                    mapMaxHeight[i, j] = mapMaxHeight[i, j];
+                }
+            }
+            myTerrain.terrainData.SetHeights(0, 0, mapMaxHeight);
         }
     }
 
@@ -89,7 +112,7 @@ public class BiomTerrainGenerator : EditorWindow {
         var steepSplat = new SplatPrototype();
 
         Texture2D grass = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Textures/Grass.psd", typeof(Texture2D));
-        Texture2D cliff = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Textures/Cliff.psd", typeof(Texture2D));
+        Texture2D cliff = (Texture2D)AssetDatabase.LoadAssetAtPath("Assets/Textures/Stone.png", typeof(Texture2D));
 
         flatSplat.texture = grass;
         steepSplat.texture = cliff;
