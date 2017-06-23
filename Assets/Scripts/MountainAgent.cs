@@ -8,8 +8,9 @@ public class MountainAgent {
     private int tokens;
     private Point startingPoint;
     private Point repulsor;
-    private const float MAX_HEIGHT = 80.0f;
+    private const float MAX_HEIGHT = 90.0f;
     private const int MAX_WIDTH = 50;
+    private const int MIN_WIDTH = 5;
     private Stopwatch stopWatch;
     private static float[,] mountainHeights;
     private static float[,] mountainWides;
@@ -60,8 +61,7 @@ public class MountainAgent {
     //Bottleneck!
     private void raiseTerrain(Point p) {
         float pHoehe = getHeight(p.getX(), p.getY()) * MAX_HEIGHT;
-        float pBreite = getWidth(p.getX(), p.getY()) * MAX_WIDTH;
-        int wide = (int)(getWidth(p.getX(), p.getY()) * RandomsBySeed.getNextRandom(8, 10) / 10.0 * MAX_WIDTH);
+        float pBreite = getWidth(p.getX(), p.getY()) * (MAX_WIDTH - MIN_WIDTH) + MIN_WIDTH;
         List<Point> candidates = new List<Point>();
         for (int x = p.getX() - (int)pBreite / 2;x < p.getX() + pBreite / 2;x++) {
             if (x > 0 && x < heights.GetLength(0)) {
@@ -85,12 +85,8 @@ public class MountainAgent {
             h = pHoehe - pHoehe / pBreite * abstand;
             //heights += auch sehr teuer
             // /(0.25*wide*wide) da ansonsten zu hoch, wegen mehrfacherfühung
-            add = h / (0.25f * pBreite * pBreite) ;
+            add = h / (0.25f * pBreite * pBreite);
             heights[c.getX(), c.getY()] += add;
-            if (add < 0) {
-                UnityEngine.Debug.Log("found it!!!!!!!!!!!!!!!!!");
-                return;
-            }
         }
         //ab sehr teuer 50% der kosten des gesamten Prozesses
 
@@ -123,9 +119,9 @@ public class MountainAgent {
     }
 
     private float getHeight(int x, int y) {
-        if (mountainWides == null) {
-            mountainWides = Parameters.getMountainWides();
+        if (mountainHeights == null) {
+            mountainHeights = Parameters.getMountainHeights();
         }
-        return mountainWides[x, y];
+        return mountainHeights[x, y];
     }
 }

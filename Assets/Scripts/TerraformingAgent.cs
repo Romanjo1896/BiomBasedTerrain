@@ -31,28 +31,22 @@ public class TerraformingAgent {
                 perlinFacors[i, j] = 0;
             }
         }
+        float pi = Mathf.PI;
         for (int o = 0;o < OKTAVES;o++) {
             for (int i = 0;i < perlinFacors.GetLength(0);i++) {
                 for (int j = 0;j < perlinFacors.GetLength(1);j++) {
-                    float perlinAddition = height * (Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax));
-
+                    //float perlinAddition = height * (Mathf.PerlinNoise(i * frequency / xMax, j * frequency / yMax));
+                   float perlinAddition = height * Mathf.PerlinNoise((i * frequency / pi) / (100 * pi), (j * frequency / pi) / (100 * pi));
                     perlinFacors[i, j] += perlinAddition;
                 }
             }
             height = height / 2;
             frequency = frequency * 2;
         }
-        float akt = 0;
         for (int i = 0;i < heights.GetLength(0);i++) {
             for (int j = 0;j < heights.GetLength(1);j++) {
-                akt = heights[i, j];
-                if (akt > 0.1f) {
-                    akt = heights[i, j];
-                }
                 perlinFacors[i, j] = perlinFacors[i, j] / MAX_POSSIBLE_HEIGHT * PERLIN_WEIGHT + 0.1f;
                 heights[i, j] = heights[i, j] * (1.0f + perlinFacors[i, j]);
-                akt = heights[i, j];
-                akt = -1;
             }
         }
         float min = float.MaxValue;
@@ -75,6 +69,7 @@ public class TerraformingAgent {
                 }
             }
         }
+        UnityEngine.Debug.Log("PerlinFactors: min=" + min + "   max=" + max);
         TerrainGenerator.updateHeights(heights);
         stopWatch.Stop();
     }

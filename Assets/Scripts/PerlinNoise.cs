@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ public class PerlinNoise {
     }
 
     public static void generatePerlinNoise(float[,] map, float frequency, int oktaves) {
+
         float height = 1;
         xMax = map.GetLength(0) - 1;
         yMax = map.GetLength(1) - 1;
@@ -51,11 +53,6 @@ public class PerlinNoise {
             }
         }
 
-        //for (int i = 0;i < map.GetLength(0);i++) {
-        //    for (int j = 0;j < map.GetLength(1);j++) {
-        //        map[i, j] = map[i, j] / max;
-        //    }
-        //}
 
         for (int i = 0;i < map.GetLength(0);i++) {
             for (int j = 0;j < map.GetLength(1);j++) {
@@ -67,7 +64,6 @@ public class PerlinNoise {
                 }
             }
         }
-        Debug.Log("Perlin min=" + min + "  max=" + max);
 
     }
 
@@ -87,4 +83,64 @@ public class PerlinNoise {
         }
         return nachbarn;
     }
+
+    public static void generatePerlinNoise(float[,] map, float frequency, int oktaves, int verschiebungX, int verschiebungY) {
+        verschiebungX = verschiebungX * 500;
+        verschiebungY = verschiebungY * 500;
+
+        float height = 1;
+        xMax = (map.GetLength(0) - 1) * 100000;
+        yMax = (map.GetLength(1) - 1) * 100000;
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                map[i, j] = 0;
+            }
+        }
+        float pi = Mathf.PI;
+        for (int o = 0;o < oktaves;o++) {
+            for (int i = 0;i < map.GetLength(0);i++) {
+                for (int j = 0;j < map.GetLength(1);j++) {
+                    //     map[i, j] += height * Mathf.PerlinNoise(100000 * (i * frequency / xMax + verschiebungX / xMax), 100000 * (j * frequency / yMax + verschiebungY / yMax));
+                    map[i, j] += height * Mathf.PerlinNoise((i * frequency / pi + verschiebungX) / (100 * pi), (j * frequency / pi + verschiebungY) / (100 * pi));
+                }
+            }
+            height = height / 2;
+            frequency = frequency * 2;
+        }
+        normalize(map);
+    }
+
+    public static void normalize(float[,] map) {
+        float min = float.MaxValue;
+        float max = float.MinValue;
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                if (map[i, j] < min) {
+                    min = map[i, j];
+                }
+                if (map[i, j] > max) {
+                    max = map[i, j];
+                }
+            }
+        }
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                map[i, j] = (map[i, j] - min) / (max - min);
+            }
+        }
+        max = 0;
+        for (int i = 0;i < map.GetLength(0);i++) {
+            for (int j = 0;j < map.GetLength(1);j++) {
+                if (map[i, j] < min) {
+                    min = map[i, j];
+                }
+                if (map[i, j] > max) {
+                    max = map[i, j];
+                }
+            }
+
+        }
+        Debug.Log("min=" + min + " max=" + max);
+    }
+
 }

@@ -8,7 +8,7 @@ using System.Threading;
 public class TerrainGenerator {
     public Terrain myTerrain;
     private static float[,] heights;
-    private const float baseHeight = 30.0f;
+    private const float baseHeight = 70.0f;
 
     // Use this for initialization
     public void Start(bool generateCoastLine, int mountainAgentCount, bool terraforming) {
@@ -25,7 +25,7 @@ public class TerrainGenerator {
             }
         }
 
-        Parameters.generateAllMaps(heightmapWidth, heightmapHeight);
+        Parameters.generateAllMaps(heights.GetLength(0), heights.GetLength(1));
 
         if (generateCoastLine) {
             stopWatch.Start();
