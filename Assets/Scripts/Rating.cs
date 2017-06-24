@@ -107,10 +107,10 @@ class Block {
     public void calcSmallBoxScore() {
         double sum = 0;
         foreach (Block b in nachbarn) {
-            sum = sum + b.getMax();
+            sum = sum + Math.Abs(b.getMax() - maxHeight);
         }
         sum = sum / nachbarn.Count;
-        smallScore = Math.Abs(maxHeight - sum);
+        smallScore = sum;
     }
 
     private void calcMax() {
@@ -143,7 +143,7 @@ class Block {
     }
 
     internal static void setTotalMax(float newTotalMax) {
-        totalMax = newTotalMax ;
+        totalMax = newTotalMax;
     }
 }
 

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
@@ -8,9 +9,9 @@ public class MountainAgent {
     private int tokens;
     private Point startingPoint;
     private Point repulsor;
-    private const float MAX_HEIGHT = 90.0f;
-    private const int MAX_WIDTH = 50;
-    private const int MIN_WIDTH = 5;
+    private const float MAX_HEIGHT = 70.0f;
+    private const int MAX_WIDTH = 60;
+    private const int MIN_WIDTH = 10;
     private Stopwatch stopWatch;
     private static float[,] mountainHeights;
     private static float[,] mountainWides;
@@ -96,13 +97,13 @@ public class MountainAgent {
         int x = p.getX();
         int y = p.getY();
         List<Point> nachbarn = new List<Point>();
-        if (x > 0) {
+        if (x > 1) {
             nachbarn.Add(new Point(x - 1, y));
         }
         if (x < heights.GetLength(0) - 2) {
             nachbarn.Add(new Point(x + 1, y));
         }
-        if (y > 0) {
+        if (y > 1) {
             nachbarn.Add(new Point(x, y - 1));
         }
         if (y < heights.GetLength(1) - 2) {
@@ -119,9 +120,15 @@ public class MountainAgent {
     }
 
     private float getHeight(int x, int y) {
-        if (mountainHeights == null) {
-            mountainHeights = Parameters.getMountainHeights();
+        try {
+            if (mountainHeights == null) {
+                mountainHeights = Parameters.getMountainHeights();
+            }
+            return mountainHeights[x, y];
         }
-        return mountainHeights[x, y];
+        catch (IndexOutOfRangeException e) {
+            UnityEngine.Debug.Log("index out at " + x + " " + y);
+            return 0;
+        }
     }
 }
